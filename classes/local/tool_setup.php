@@ -58,6 +58,16 @@ class tool_setup {
     }
 
     /**
+     * Whether a tool is switched on and in the activity chooser.
+     *
+     * @param \stdClass $type Row from lti_types.
+     * @return bool
+     */
+    public static function is_active(\stdClass $type): bool {
+        return $type->state == LTI_TOOL_STATE_CONFIGURED && $type->coursevisible == LTI_COURSEVISIBLE_ACTIVITYCHOOSER;
+    }
+
+    /**
      * Domain of the configured Paradiso workspace, normalised the way mod_lti
      * stores tool domains.
      *
@@ -110,5 +120,18 @@ class tool_setup {
             $count++;
         }
         return $count;
+    }
+
+    /**
+     * Delete every Paradiso tool registered from the workspace.
+     *
+     * @return int Number of tools deleted.
+     */
+    public static function remove_all(): int {
+        $tools = self::find_tools();
+        foreach ($tools as $type) {
+            lti_delete_type($type->id);
+        }
+        return count($tools);
     }
 }

@@ -39,6 +39,12 @@ if ($hassiteconfig) {
         PARAM_URL,
         60
     ));
+    $settings->add(new admin_setting_configcheckbox(
+        'local_paradiso/removeonuninstall',
+        get_string('removeonuninstall', 'local_paradiso'),
+        get_string('removeonuninstall_desc', 'local_paradiso'),
+        0
+    ));
     $ADMIN->add('local_paradiso_category', $settings);
 
     $ADMIN->add('local_paradiso_category', new admin_externalpage(
