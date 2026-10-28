@@ -36,8 +36,12 @@ $activateurl = new moodle_url($pageurl, ['action' => 'activate', 'sesskey' => se
 if (optional_param('action', '', PARAM_ALPHA) === 'activate') {
     require_sesskey();
     $count = tool_setup::activate_all();
-    redirect($pageurl, get_string('toolsactivated', 'local_paradiso', $count), null,
-        \core\output\notification::NOTIFY_SUCCESS);
+    redirect(
+        $pageurl,
+        get_string('toolsactivated', 'local_paradiso', $count),
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
 }
 
 $form = new \local_paradiso\form\register_form($pageurl);
@@ -56,8 +60,10 @@ if ($registrationurl !== null) {
     // The mod_lti start page signs a registration token and forwards to
     // Paradiso. Paradiso posts org.imsglobal.lti.close to this window when it
     // is done, and setup finishes straight away.
-    $starturl = new moodle_url('/mod/lti/startltiadvregistration.php',
-        ['url' => $registrationurl, 'sesskey' => sesskey()]);
+    $starturl = new moodle_url(
+        '/mod/lti/startltiadvregistration.php',
+        ['url' => $registrationurl, 'sesskey' => sesskey()]
+    );
     echo $OUTPUT->notification(get_string('registering', 'local_paradiso'), 'info');
     echo html_writer::tag('iframe', '', ['src' => $starturl->out(false), 'width' => '100%', 'height' => '320',
         'class' => 'border']);

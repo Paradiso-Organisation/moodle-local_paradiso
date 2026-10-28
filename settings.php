@@ -25,17 +25,26 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $ADMIN->add('localplugins', new admin_category('local_paradiso_category',
-        get_string('pluginname', 'local_paradiso')));
+    $ADMIN->add('localplugins', new admin_category(
+        'local_paradiso_category',
+        get_string('pluginname', 'local_paradiso')
+    ));
 
     $settings = new admin_settingpage('local_paradiso', get_string('settings', 'local_paradiso'));
-    $settings->add(new admin_setting_configtext('local_paradiso/workspaceurl',
+    $settings->add(new admin_setting_configtext(
+        'local_paradiso/workspaceurl',
         get_string('workspaceurl', 'local_paradiso'),
-        get_string('workspaceurl_desc', 'local_paradiso'), '', PARAM_URL, 60));
+        get_string('workspaceurl_desc', 'local_paradiso'),
+        '',
+        PARAM_URL,
+        60
+    ));
     $ADMIN->add('local_paradiso_category', $settings);
 
-    $ADMIN->add('local_paradiso_category', new admin_externalpage('local_paradiso_connect',
+    $ADMIN->add('local_paradiso_category', new admin_externalpage(
+        'local_paradiso_connect',
         get_string('connect', 'local_paradiso'),
         new moodle_url('/local/paradiso/index.php'),
-        'local/paradiso:manage'));
+        'local/paradiso:manage'
+    ));
 }

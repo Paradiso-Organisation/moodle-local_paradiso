@@ -34,10 +34,10 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
  */
 class tool_setup {
     /** @var string Paradiso Presentations (PAT). */
-    const KIND_PAT = 'pat';
+    public const KIND_PAT = 'pat';
 
     /** @var string Paradiso Roleplay. */
-    const KIND_ROLEPLAY = 'roleplay';
+    public const KIND_ROLEPLAY = 'roleplay';
 
     /**
      * Which Paradiso tool a type is, read from the redirect path Paradiso
