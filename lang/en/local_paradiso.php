@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['activate'] = 'Finish setup';
-$string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace and adds it to the activity chooser. Safe to run more than once.';
+$string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace, adds it to the activity chooser and sets it to open in a new window. Safe to run more than once.';
 $string['colchooser'] = 'In activity chooser';
 $string['colname'] = 'Tool';
 $string['colstatus'] = 'Status';

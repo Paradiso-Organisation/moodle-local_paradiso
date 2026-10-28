@@ -102,6 +102,10 @@ class tool_setup {
             $config->lti_description = get_string('tooldescription_' . self::kind_of($type), 'local_paradiso');
             $config->lti_sendname = LTI_SETTING_ALWAYS;
             $config->lti_sendemailaddr = LTI_SETTING_ALWAYS;
+            // Inside a Moodle page Paradiso's sign-in cookie is a third-party
+            // cookie, which Safari and private windows block. A new window
+            // works in every browser.
+            $config->lti_launchcontainer = LTI_LAUNCH_CONTAINER_WINDOW;
             lti_update_type($type, $config);
             $count++;
         }
