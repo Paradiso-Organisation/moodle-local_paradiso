@@ -27,11 +27,12 @@ to copy keys and URLs between the two systems.
    Settings and enter your Paradiso workspace address, for example
    `https://yourcompany.paradiso.ai`.
 2. Open Connect Paradiso on the same menu.
-3. In Paradiso, copy the registration link for Presentations or Roleplay and
-   paste it into Registration link. Click Register.
+3. In Paradiso, open Integrations, choose Moodle, and copy the link for
+   Presentations or Roleplay. Paste it into Registration link and click Register.
 4. The page finishes the setup on its own. Repeat for the other tool.
 
-Each registration link works for 10 minutes.
+The links do not expire. If one leaks, replace it on the Moodle card in Paradiso
+and the old one stops working. Sites that are already connected keep working.
 
 ## Add an activity
 

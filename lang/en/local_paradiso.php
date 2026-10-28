@@ -23,18 +23,17 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 $string['activate'] = 'Finish setup';
 $string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace, adds it to the activity chooser and sets it to open in a new window. Safe to run more than once.';
-$string['colchooser'] = 'In activity chooser';
-$string['colname'] = 'Tool';
 $string['checkconnection'] = 'Paradiso connection';
 $string['checkconnection_nourl'] = 'The Paradiso workspace address is not set.';
 $string['checkconnection_ok'] = '{$a} Paradiso tool(s) are active and in the activity chooser.';
 $string['checkconnection_pending'] = '{$a} Paradiso tool(s) are registered but not switched on. Open Connect Paradiso and click Finish setup.';
+$string['colchooser'] = 'In activity chooser';
+$string['colname'] = 'Tool';
 $string['colstatus'] = 'Status';
 $string['connect'] = 'Connect Paradiso';
-$string['connectintro'] = 'In Paradiso, copy the registration link for Presentations or Roleplay and paste it below. Each link works for 10 minutes. Register one tool at a time.';
+$string['connectintro'] = 'In Paradiso, open Integrations, choose Moodle, and copy the link for Presentations or Roleplay. Paste it below and register one product at a time.';
 $string['no'] = 'No';
 $string['notools'] = 'No Paradiso tools are registered from this workspace yet.';
 $string['paradiso:manage'] = 'Manage the Paradiso integration';
@@ -43,7 +42,7 @@ $string['privacy:metadata'] = 'The Paradiso integration plugin does not store an
 $string['register'] = 'Register';
 $string['registering'] = 'Finish the registration below. This page updates on its own when it is done.';
 $string['registrationurl'] = 'Registration link';
-$string['registrationurl_help'] = 'The link Paradiso shows for connecting an LMS. It starts with https and expires after 10 minutes.';
+$string['registrationurl_help'] = 'The link from the Moodle card in Paradiso Integrations. It starts with https.';
 $string['registrationurlhttps'] = 'The Registration link must be a valid URL that starts with https.';
 $string['registrationurlrequired'] = 'The Registration link field is required.';
 $string['removeonuninstall'] = 'Remove the tools when uninstalling';
