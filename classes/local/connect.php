@@ -70,15 +70,6 @@ class connect {
     }
 
     /**
-     * Paradiso's sign-up page for admins without an account.
-     *
-     * @return \moodle_url
-     */
-    public static function start_free_url(): \moodle_url {
-        return new \moodle_url(self::signin_url() . '/connect/moodle/start-free');
-    }
-
-    /**
      * Creates a one-time state value and remembers it in the session.
      *
      * @return string

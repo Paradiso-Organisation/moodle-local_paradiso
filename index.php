@@ -159,11 +159,6 @@ echo $OUTPUT->single_button(
     'post',
     ['type' => single_button::BUTTON_PRIMARY]
 );
-echo html_writer::tag('p', get_string('startfree', 'local_paradiso', html_writer::link(
-    connect::start_free_url(),
-    get_string('startfreelink', 'local_paradiso'),
-    ['target' => '_blank', 'rel' => 'noopener']
-)), ['class' => 'mt-3']);
 
 if (!empty($tools)) {
     echo $OUTPUT->single_button($activateurl, get_string('activate', 'local_paradiso'));

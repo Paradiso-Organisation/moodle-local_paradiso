@@ -34,9 +34,7 @@ final class connect_test extends \advanced_testcase {
         $this->assertNotEmpty($url->get_param('state'));
 
         set_config('signinurl', 'https://acme.example.com/', 'local_paradiso');
-        $this->assertStringStartsWith('https://acme.example.com/connect/moodle?', connect::start_url()->out(false));
-        $this->assertSame('https://acme.example.com/connect/moodle/start-free', connect::start_free_url()->out(false));
-    }
+        $this->assertStringStartsWith('https://acme.example.com/connect/moodle?', connect::start_url()->out(false));    }
 
     public function test_state_works_once(): void {
         $state = connect::new_state();

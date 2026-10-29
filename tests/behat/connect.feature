@@ -7,11 +7,11 @@ Feature: Connect Paradiso
   Background:
     Given I log in as "admin"
 
-  Scenario: A new site offers Connect with Paradiso and a sign-up link
+  Scenario: A new site offers Connect with Paradiso
     When I navigate to "Plugins > Local plugins > Paradiso integration > Connect Paradiso" in site administration
     Then I should see "No Paradiso tools are registered from this workspace yet."
     And "Connect with Paradiso" "button" should exist
-    And "Start free" "link" should exist
+    And I should see "create a free account or log in"
 
   Scenario: Registering by hand needs the tool address first
     When I navigate to "Plugins > Local plugins > Paradiso integration > Connect Paradiso" in site administration
