@@ -65,7 +65,7 @@ const wrap = (handler) => function(returnData) {
 };
 
 export const init = () => {
-    // mod_lti defines the handler when its own module starts, which can be
+    // The mod_lti module defines the handler when it starts, which can be
     // before or after this one, so catch both orders.
     let handler = window.processContentItemReturnData;
     Object.defineProperty(window, 'processContentItemReturnData', {

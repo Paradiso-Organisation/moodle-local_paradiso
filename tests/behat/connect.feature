@@ -28,5 +28,5 @@ Feature: Connect Paradiso
     Then I should see "The Registration link must be a valid URL that starts with https."
 
   Scenario: A reply from Paradiso without a matching request is refused
-    When I am on the "local/paradiso/index.php?action=connected&state=forged" "relative path"
+    When I visit "/local/paradiso/index.php?action=connected&state=forged"
     Then I should see "That connection request has expired or was already used."
