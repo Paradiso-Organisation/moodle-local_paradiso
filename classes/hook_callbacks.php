@@ -17,6 +17,7 @@
 namespace local_paradiso;
 
 use core\hook\output\before_footer_html_generation;
+use core\hook\output\before_http_headers;
 
 /**
  * Hook callbacks for local_paradiso.
@@ -41,5 +42,24 @@ class hook_callbacks {
         if ($PAGE->pagetype === 'mod-lti-mod') {
             $PAGE->requires->js_call_amd('local_paradiso/contentitem_fix', 'init');
         }
+    }
+
+    /**
+     * Opens Connect Paradiso once, right after the plugin is installed.
+     *
+     * Moodle ends an install on Site administration > Notifications, and only
+     * prints that page once every pending upgrade and new setting is done, so
+     * reaching its headers means the install has finished. The flag set by
+     * db/install.php is cleared first, so this happens a single time.
+     *
+     * @param before_http_headers $hook
+     */
+    public static function before_http_headers(before_http_headers $hook): void {
+        global $PAGE;
+        if ($PAGE->pagetype !== 'admin-index' || !get_config('local_paradiso', 'showconnect') || !is_siteadmin()) {
+            return;
+        }
+        unset_config('showconnect', 'local_paradiso');
+        redirect(new \moodle_url('/local/paradiso/index.php', ['welcome' => 1]));
     }
 }

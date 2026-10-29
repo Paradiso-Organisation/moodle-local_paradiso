@@ -136,6 +136,10 @@ if ($registrationurl !== null) {
     die();
 }
 
+if (optional_param('welcome', 0, PARAM_BOOL)) {
+    echo $OUTPUT->notification(get_string('welcome', 'local_paradiso'), 'success');
+}
+
 $tools = [];
 foreach (tool_setup::find_tools() as $type) {
     $active = $type->state == LTI_TOOL_STATE_CONFIGURED;

@@ -64,6 +64,7 @@ $string['statuspending'] = 'Waiting for setup';
 $string['tooldescription_pat'] = 'Add a Paradiso presentation to this course. Learner scores come back to the gradebook.';
 $string['tooldescription_roleplay'] = 'Add a Paradiso roleplay where learners practise a conversation with an AI character. Scores come back to the gradebook.';
 $string['toolsactivated'] = 'Setup finished. {$a} Paradiso tool(s) are active and in the activity chooser.';
+$string['welcome'] = 'The Paradiso integration is installed. Connect it to your Paradiso workspace to finish.';
 $string['workspacemissing'] = 'Set the Paradiso tool address in the plugin settings first, or use Connect with Paradiso above.';
 $string['workspaceurl'] = 'Paradiso tool address';
 $string['workspaceurl_desc'] = 'Filled in for you by Connect with Paradiso. If you register by hand, copy it from the Moodle card under Integrations in Paradiso.';
