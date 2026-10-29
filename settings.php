@@ -32,6 +32,14 @@ if ($hassiteconfig) {
 
     $settings = new admin_settingpage('local_paradiso', get_string('settings', 'local_paradiso'));
     $settings->add(new admin_setting_configtext(
+        'local_paradiso/signinurl',
+        get_string('signinurl', 'local_paradiso'),
+        get_string('signinurl_desc', 'local_paradiso', \local_paradiso\local\connect::DEFAULT_SIGNIN_URL),
+        '',
+        PARAM_URL,
+        60
+    ));
+    $settings->add(new admin_setting_configtext(
         'local_paradiso/workspaceurl',
         get_string('workspaceurl', 'local_paradiso'),
         get_string('workspaceurl_desc', 'local_paradiso'),
