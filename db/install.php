@@ -27,8 +27,10 @@
  *
  * The settings get their defaults here, so Moodle skips its "New settings"
  * step: both addresses are optional now that Connect with Paradiso fills in
- * the one that matters. The flag is read and cleared by
- * hook_callbacks::before_http_headers.
+ * the one that matters. The flag holds the install time and is read and
+ * cleared by hook_callbacks::before_http_headers. A command-line install
+ * sets no flag: no admin is waiting in a browser, and a flag left behind
+ * would fire after some other plugin's install instead.
  *
  * @return bool
  */
@@ -36,6 +38,8 @@ function xmldb_local_paradiso_install() {
     set_config('signinurl', '', 'local_paradiso');
     set_config('workspaceurl', '', 'local_paradiso');
     set_config('removeonuninstall', 0, 'local_paradiso');
-    set_config('showconnect', 1, 'local_paradiso');
+    if (!CLI_SCRIPT) {
+        set_config('showconnect', time(), 'local_paradiso');
+    }
     return true;
 }

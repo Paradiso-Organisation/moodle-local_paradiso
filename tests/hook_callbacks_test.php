@@ -55,7 +55,7 @@ final class hook_callbacks_test extends \advanced_testcase {
     public function test_install_sends_admin_to_connect_once(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
-        set_config('showconnect', 1, 'local_paradiso');
+        set_config('showconnect', time(), 'local_paradiso');
 
         $this->assertFalse($this->run_hook('course-view'), 'Only Site administration > Notifications redirects.');
         $this->assertTrue($this->run_hook('admin-index'));
@@ -66,9 +66,29 @@ final class hook_callbacks_test extends \advanced_testcase {
     public function test_non_admin_is_not_redirected(): void {
         $this->resetAfterTest();
         $this->setUser($this->getDataGenerator()->create_user());
-        set_config('showconnect', 1, 'local_paradiso');
+        $installedat = time();
+        set_config('showconnect', $installedat, 'local_paradiso');
 
         $this->assertFalse($this->run_hook('admin-index'));
-        $this->assertEquals(1, get_config('local_paradiso', 'showconnect'), 'The flag waits for an admin.');
+        $this->assertEquals($installedat, get_config('local_paradiso', 'showconnect'), 'The flag waits for an admin.');
+    }
+
+    public function test_stale_flag_does_not_follow_another_plugin_install(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        set_config('showconnect', time() - hook_callbacks::SHOWCONNECT_TTL - 1, 'local_paradiso');
+
+        $this->assertFalse($this->run_hook('admin-index'));
+        $this->assertFalse(get_config('local_paradiso', 'showconnect'), 'A stale flag is cleared quietly.');
+    }
+
+    public function test_command_line_install_sets_no_flag(): void {
+        global $CFG;
+        $this->resetAfterTest();
+        require_once($CFG->dirroot . '/local/paradiso/db/install.php');
+        unset_config('showconnect', 'local_paradiso');
+
+        xmldb_local_paradiso_install();
+        $this->assertFalse(get_config('local_paradiso', 'showconnect'));
     }
 }

@@ -27,6 +27,9 @@ use core\hook\output\before_http_headers;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class hook_callbacks {
+    /** @var int Seconds after install during which the admin is sent to Connect Paradiso. */
+    public const SHOWCONNECT_TTL = HOURSECS;
+
     /**
      * Loads the deep linking fix on the External tool activity form.
      *
@@ -50,16 +53,24 @@ class hook_callbacks {
      * Moodle ends an install on Site administration > Notifications, and only
      * prints that page once every pending upgrade and new setting is done, so
      * reaching its headers means the install has finished. The flag set by
-     * db/install.php is cleared first, so this happens a single time.
+     * db/install.php is cleared first, so this happens a single time, and it
+     * only counts within SHOWCONNECT_TTL of this plugin's install: a stale
+     * flag must not fire after some other plugin's install.
      *
      * @param before_http_headers $hook
      */
     public static function before_http_headers(before_http_headers $hook): void {
         global $PAGE;
-        if ($PAGE->pagetype !== 'admin-index' || !get_config('local_paradiso', 'showconnect') || !is_siteadmin()) {
+        if ($PAGE->pagetype !== 'admin-index' || !is_siteadmin()) {
+            return;
+        }
+        $installedat = (int) get_config('local_paradiso', 'showconnect');
+        if (!$installedat) {
             return;
         }
         unset_config('showconnect', 'local_paradiso');
-        redirect(new \moodle_url('/local/paradiso/index.php', ['welcome' => 1]));
+        if (time() - $installedat <= self::SHOWCONNECT_TTL) {
+            redirect(new \moodle_url('/local/paradiso/index.php', ['welcome' => 1]));
+        }
     }
 }
