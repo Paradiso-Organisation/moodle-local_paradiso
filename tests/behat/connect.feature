@@ -15,14 +15,12 @@ Feature: Connect Paradiso
 
   Scenario: Registering by hand needs the tool address first
     When I navigate to "Plugins > Local plugins > Paradiso integration > Connect Paradiso" in site administration
-    And I click on "Connect with a registration link instead" "text"
     Then I should see "Set the Paradiso tool address in the plugin settings first, or use Connect with Paradiso above."
 
   Scenario: The registration link must use https
     Given the following config values are set as admin:
       | workspaceurl | https://acme.paradiso.example | local_paradiso |
     And I navigate to "Plugins > Local plugins > Paradiso integration > Connect Paradiso" in site administration
-    And I click on "Connect with a registration link instead" "text"
     When I set the field "Registration link" to "http://acme.paradiso.example/public/lti/register?token=x"
     And I press "Register"
     Then I should see "The Registration link must be a valid URL that starts with https."
