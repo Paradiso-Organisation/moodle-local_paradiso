@@ -121,7 +121,7 @@ if ($registrationurl !== null) {
     // is done, which moves on to the next queued link or finishes setup.
     $starturl = new moodle_url(
         '/mod/lti/startltiadvregistration.php',
-        ['url' => $registrationurl, 'sesskey' => sesskey()]
+        ['url' => connect::with_plugin_version($registrationurl), 'sesskey' => sesskey()]
     );
     echo $OUTPUT->notification(get_string('registering', 'local_paradiso'), 'info');
     echo html_writer::tag('iframe', '', ['src' => $starturl->out(false), 'width' => '100%', 'height' => '320',

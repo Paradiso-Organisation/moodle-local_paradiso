@@ -108,6 +108,24 @@ class connect {
     }
 
     /**
+     * Adds this plugin's release to a registration link as `plugin_version`.
+     *
+     * Moodle keeps the link's own query when it forwards the admin to
+     * Paradiso, so Paradiso can record which plugin version registered each
+     * tool. Support uses it to tell what a site runs.
+     *
+     * @param string $link Registration link from Paradiso.
+     * @return string
+     */
+    public static function with_plugin_version(string $link): string {
+        $release = \core_plugin_manager::instance()->get_plugin_info('local_paradiso')->release ?? '';
+        if ($release === '') {
+            return $link;
+        }
+        return (new \moodle_url($link, ['plugin_version' => $release]))->out(false);
+    }
+
+    /**
      * Whether a URL is fit to store as the tool address.
      *
      * @param string $url

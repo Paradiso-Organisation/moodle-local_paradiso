@@ -116,10 +116,30 @@ class tool_setup {
             // cookie, which Safari and private windows block. A new window
             // works in every browser.
             $config->lti_launchcontainer = LTI_LAUNCH_CONTAINER_WINDOW;
+            if (empty($type->icon)) {
+                $config->lti_icon = self::icon_url(self::kind_of($type));
+            }
             lti_update_type($type, $config);
             $count++;
         }
         return $count;
+    }
+
+    /**
+     * Address of the icon Paradiso publishes for a tool.
+     *
+     * Paradiso sends the same address when it registers a tool. Tools
+     * registered before it did have no icon, so setup fills it in.
+     *
+     * @param string $kind One of the KIND_ constants.
+     * @return string|null Null when the workspace address is not set.
+     */
+    public static function icon_url(string $kind): ?string {
+        $base = rtrim((string) get_config('local_paradiso', 'workspaceurl'), '/');
+        if ($base === '') {
+            return null;
+        }
+        return $base . '/lti-icons/' . ($kind === self::KIND_PAT ? 'presentations' : 'roleplay') . '.svg';
     }
 
     /**

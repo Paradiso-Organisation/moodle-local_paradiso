@@ -52,6 +52,24 @@ class connection extends check {
     }
 
     /**
+     * Whether this server gets an answer from the Paradiso tool address.
+     *
+     * Any reply below 500 counts: a sign-in redirect still proves Paradiso is
+     * up and reachable. Short timeouts keep the status page quick when it is not.
+     *
+     * @param string $url Paradiso tool address.
+     * @return bool
+     */
+    protected function is_reachable(string $url): bool {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+        $curl = new \curl();
+        $curl->head($url, ['CURLOPT_CONNECTTIMEOUT' => 3, 'CURLOPT_TIMEOUT' => 5]);
+        $code = (int) ($curl->get_info()['http_code'] ?? 0);
+        return !$curl->get_errno() && $code > 0 && $code < 500;
+    }
+
+    /**
      * Works out the connection status.
      *
      * @return result
@@ -59,6 +77,10 @@ class connection extends check {
     public function get_result(): result {
         if (tool_setup::workspace_domain() === null) {
             return new result(result::NA, get_string('checkconnection_nourl', 'local_paradiso'));
+        }
+        $workspaceurl = (string) get_config('local_paradiso', 'workspaceurl');
+        if (!$this->is_reachable($workspaceurl)) {
+            return new result(result::ERROR, get_string('checkconnection_unreachable', 'local_paradiso', $workspaceurl));
         }
         $tools = tool_setup::find_tools();
         if (!$tools) {

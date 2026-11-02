@@ -25,11 +25,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['activate'] = 'Finish setup';
-$string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace, adds it to the activity chooser and sets it to open in a new window. Safe to run more than once.';
+$string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace, adds it to the activity chooser with its icon and sets it to open in a new window. Safe to run more than once.';
 $string['checkconnection'] = 'Paradiso connection';
 $string['checkconnection_nourl'] = 'Paradiso is not connected yet. Open Connect Paradiso and click Connect with Paradiso.';
 $string['checkconnection_ok'] = '{$a} Paradiso tool(s) are active and in the activity chooser.';
 $string['checkconnection_pending'] = '{$a} Paradiso tool(s) are registered but not switched on. Open Connect Paradiso and click Finish setup.';
+$string['checkconnection_unreachable'] = 'Moodle cannot reach Paradiso at {$a}. Check the Paradiso tool address in the plugin settings, and that this server can make outgoing https requests.';
 $string['colchooser'] = 'In activity chooser';
 $string['colname'] = 'Tool';
 $string['colstatus'] = 'Status';

@@ -85,6 +85,13 @@ final class connect_test extends \advanced_testcase {
         $this->assertFalse(connect::is_valid_tool_base(''));
     }
 
+    public function test_registration_link_carries_the_plugin_release(): void {
+        $release = \core_plugin_manager::instance()->get_plugin_info('local_paradiso')->release;
+        $url = new \moodle_url(connect::with_plugin_version('https://app.paradiso.example/public/lti/register?token=abc'));
+        $this->assertSame('abc', $url->get_param('token'));
+        $this->assertSame($release, $url->get_param('plugin_version'));
+    }
+
     public function test_queue_hands_out_links_in_order_then_empties(): void {
         connect::queue_links(['https://a.example/1', 'https://a.example/2']);
         $this->assertSame('https://a.example/1', connect::next_link());

@@ -2,7 +2,7 @@
 
 Adds Paradiso Presentations and Paradiso Roleplay to Moodle as activities.
 Teachers pick a presentation or a roleplay from the activity chooser, learners
-open it inside the course, and scores go to the Moodle gradebook.
+open it from the course in a new window, and scores go to the Moodle gradebook.
 
 The plugin uses Moodle's own External tool (LTI 1.3) support. It connects your
 site to your Paradiso workspace and switches the tools on, so you don't have
@@ -19,19 +19,18 @@ to copy keys and URLs between the two systems.
 1. Copy this folder to `local/paradiso` (Moodle 4.5) or `public/local/paradiso`
    (Moodle 5.1 and later), or install the zip from Site administration >
    Plugins > Install plugins.
-2. Visit Site administration > Notifications to finish the install.
+2. Visit Site administration > Notifications to finish the install. Moodle then
+   opens the Connect Paradiso page for you.
 
 ## Connect your Paradiso workspace
 
-1. Go to Site administration > Plugins > Local plugins > Paradiso integration >
-   Connect Paradiso.
-2. Click **Connect with Paradiso**, sign in as a Paradiso workspace admin, and
-   click **Connect Moodle**.
+1. On the Connect Paradiso page (Site administration > Plugins > Local plugins >
+   Paradiso integration > Connect Paradiso), click **Connect with Paradiso**.
+2. Sign in as a Paradiso workspace admin and click **Connect Moodle**. New to
+   Paradiso? Create your free workspace on the page that opens; you come
+   straight back to the same Connect Moodle step afterwards.
 3. You come back to Moodle, which registers Presentations and Roleplay and
    switches them on. When the page says Setup finished, you are done.
-
-New to Paradiso? Click **Start free** on the same page, create your workspace,
-then come back and click Connect with Paradiso.
 
 If your workspace signs in at its own address, enter it as **Paradiso sign-in
 address** in the plugin settings first.

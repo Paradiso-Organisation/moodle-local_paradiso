@@ -24,7 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($hassiteconfig) {
+// The Connect page needs only local/paradiso:manage, which the Manager role
+// has, so the menu is added for those users too. The settings page itself
+// keeps Moodle's usual site-config requirement.
+if ($hassiteconfig || has_capability('local/paradiso:manage', context_system::instance())) {
     $ADMIN->add('localplugins', new admin_category(
         'local_paradiso_category',
         get_string('pluginname', 'local_paradiso')

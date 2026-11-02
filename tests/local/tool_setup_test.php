@@ -120,10 +120,57 @@ final class tool_setup_test extends \advanced_testcase {
         $this->assertTrue($DB->record_exists('lti_types', ['id' => $other]));
     }
 
+    /**
+     * The status check with its network probe replaced, so tests stay offline.
+     *
+     * @param bool $reachable What the probe reports.
+     * @return connection
+     */
+    private function check(bool $reachable): connection {
+        return new class ($reachable) extends connection {
+            /** @var bool What is_reachable() reports. */
+            private bool $reachable;
+
+            /**
+             * Constructor.
+             *
+             * @param bool $reachable
+             */
+            public function __construct(bool $reachable) {
+                $this->reachable = $reachable;
+            }
+
+            /**
+             * Reports the canned answer instead of probing.
+             *
+             * @param string $url
+             * @return bool
+             */
+            protected function is_reachable(string $url): bool {
+                return $this->reachable;
+            }
+        };
+    }
+
+    public function test_activate_all_sets_missing_icons_only(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        $pat = $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
+        $roleplay = $this->add_tool(self::WORKSPACE . '/lti/callback');
+        $DB->set_field('lti_types', 'icon', 'https://cdn.example/own.png', ['id' => $roleplay]);
+
+        tool_setup::activate_all();
+
+        $this->assertSame(self::WORKSPACE . '/lti-icons/presentations.svg', $DB->get_field('lti_types', 'icon', ['id' => $pat]));
+        $this->assertSame('https://cdn.example/own.png', $DB->get_field('lti_types', 'icon', ['id' => $roleplay]));
+    }
+
     public function test_connection_check(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
-        $check = new connection();
+        $check = $this->check(true);
         $this->assertSame(result::NA, $check->get_result()->get_status());
 
         set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
@@ -134,5 +181,17 @@ final class tool_setup_test extends \advanced_testcase {
 
         tool_setup::activate_all();
         $this->assertSame(result::OK, $check->get_result()->get_status());
+    }
+
+    public function test_connection_check_reports_unreachable_paradiso(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
+        tool_setup::activate_all();
+
+        $result = $this->check(false)->get_result();
+        $this->assertSame(result::ERROR, $result->get_status());
+        $this->assertStringContainsString(self::WORKSPACE, $result->get_summary());
     }
 }
