@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_paradiso\local;
+namespace local_plmslti\local;
 
 /**
  * The "Connect with Paradiso" round trip.
@@ -24,7 +24,7 @@ namespace local_paradiso\local;
  * links are queued in the session and registered one at a time on the
  * Connect page.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -44,7 +44,7 @@ class connect {
      * @return string Without a trailing slash.
      */
     public static function signin_url(): string {
-        $url = trim((string) get_config('local_paradiso', 'signinurl'));
+        $url = trim((string) get_config('local_plmslti', 'signinurl'));
         return rtrim($url !== '' ? $url : self::DEFAULT_SIGNIN_URL, '/');
     }
 
@@ -54,7 +54,7 @@ class connect {
      * @return \moodle_url
      */
     public static function return_url(): \moodle_url {
-        return new \moodle_url('/local/paradiso/index.php');
+        return new \moodle_url('/local/plmslti/index.php');
     }
 
     /**
@@ -77,7 +77,7 @@ class connect {
     public static function new_state(): string {
         global $SESSION;
         $value = random_string(32);
-        $SESSION->local_paradiso_state = ['value' => $value, 'time' => time()];
+        $SESSION->local_plmslti_state = ['value' => $value, 'time' => time()];
         return $value;
     }
 
@@ -89,8 +89,8 @@ class connect {
      */
     public static function check_state(string $value): bool {
         global $SESSION;
-        $stored = $SESSION->local_paradiso_state ?? null;
-        unset($SESSION->local_paradiso_state);
+        $stored = $SESSION->local_plmslti_state ?? null;
+        unset($SESSION->local_plmslti_state);
         if (!is_array($stored) || $value === '') {
             return false;
         }
@@ -104,7 +104,7 @@ class connect {
      * @return bool
      */
     public static function is_valid_link(string $url): bool {
-        return clean_param($url, PARAM_URL) === $url && str_starts_with($url, 'https://');
+        return clean_param($url, PARAM_URL) === $url && strpos($url, 'https://') === 0;
     }
 
     /**
@@ -118,7 +118,7 @@ class connect {
      * @return string
      */
     public static function with_plugin_version(string $link): string {
-        $release = \core_plugin_manager::instance()->get_plugin_info('local_paradiso')->release ?? '';
+        $release = \core_plugin_manager::instance()->get_plugin_info('local_plmslti')->release ?? '';
         if ($release === '') {
             return $link;
         }
@@ -139,17 +139,32 @@ class connect {
      * Keeps the valid links from Paradiso's reply, in registration order.
      *
      * @param array $links Product => registration link.
-     * @return string[]
+     * @return string[] Product => registration link.
      */
     public static function valid_links(array $links): array {
         $queue = [];
         foreach (self::PRODUCTS as $product) {
             $link = (string) ($links[$product] ?? '');
             if ($link !== '' && self::is_valid_link($link)) {
-                $queue[] = $link;
+                $queue[$product] = $link;
             }
         }
         return $queue;
+    }
+
+    /**
+     * Drops the products this site already has a tool for, so Connect again
+     * only adds what is new instead of a second copy of each tool.
+     *
+     * Reads tools from the saved workspace address, so save it first.
+     *
+     * @param string[] $links Product => registration link.
+     * @return string[] Product => registration link.
+     */
+    public static function without_connected(array $links): array {
+        $kinds = array_map([tool_setup::class, 'kind_of'], tool_setup::find_tools());
+        $product = ['pat' => tool_setup::KIND_PAT, 'par' => tool_setup::KIND_ROLEPLAY];
+        return array_filter($links, fn($key) => !in_array($product[$key] ?? null, $kinds, true), ARRAY_FILTER_USE_KEY);
     }
 
     /**
@@ -159,7 +174,7 @@ class connect {
      */
     public static function queue_links(array $links): void {
         global $SESSION;
-        $SESSION->local_paradiso_queue = array_values($links);
+        $SESSION->local_plmslti_queue = array_values($links);
     }
 
     /**
@@ -169,12 +184,12 @@ class connect {
      */
     public static function next_link(): ?string {
         global $SESSION;
-        $queue = $SESSION->local_paradiso_queue ?? [];
+        $queue = $SESSION->local_plmslti_queue ?? [];
         $next = array_shift($queue);
         if ($queue) {
-            $SESSION->local_paradiso_queue = $queue;
+            $SESSION->local_plmslti_queue = $queue;
         } else {
-            unset($SESSION->local_paradiso_queue);
+            unset($SESSION->local_plmslti_queue);
         }
         return $next;
     }

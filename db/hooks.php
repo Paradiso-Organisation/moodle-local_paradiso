@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Hook callbacks for local_paradiso.
+ * Hook callbacks for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,10 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 $callbacks = [
     [
         'hook' => \core\hook\output\before_footer_html_generation::class,
-        'callback' => [\local_paradiso\hook_callbacks::class, 'before_footer_html_generation'],
+        'callback' => [\local_plmslti\hook_callbacks::class, 'before_footer_html_generation'],
     ],
     [
         'hook' => \core\hook\output\before_http_headers::class,
-        'callback' => [\local_paradiso\hook_callbacks::class, 'before_http_headers'],
+        'callback' => [\local_plmslti\hook_callbacks::class, 'before_http_headers'],
     ],
 ];

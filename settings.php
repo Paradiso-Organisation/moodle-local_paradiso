@@ -15,53 +15,53 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Admin settings for local_paradiso.
+ * Admin settings for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-// The Connect page needs only local/paradiso:manage, which the Manager role
+// The Connect page needs only local/plmslti:manage, which the Manager role
 // has, so the menu is added for those users too. The settings page itself
 // keeps Moodle's usual site-config requirement.
-if ($hassiteconfig || has_capability('local/paradiso:manage', context_system::instance())) {
+if ($hassiteconfig || has_capability('local/plmslti:manage', context_system::instance())) {
     $ADMIN->add('localplugins', new admin_category(
-        'local_paradiso_category',
-        get_string('pluginname', 'local_paradiso')
+        'local_plmslti_category',
+        get_string('pluginname', 'local_plmslti')
     ));
 
-    $settings = new admin_settingpage('local_paradiso', get_string('settings', 'local_paradiso'));
+    $settings = new admin_settingpage('local_plmslti', get_string('settings', 'local_plmslti'));
     $settings->add(new admin_setting_configtext(
-        'local_paradiso/signinurl',
-        get_string('signinurl', 'local_paradiso'),
-        get_string('signinurl_desc', 'local_paradiso', \local_paradiso\local\connect::DEFAULT_SIGNIN_URL),
+        'local_plmslti/signinurl',
+        get_string('signinurl', 'local_plmslti'),
+        get_string('signinurl_desc', 'local_plmslti', \local_plmslti\local\connect::DEFAULT_SIGNIN_URL),
         '',
         PARAM_URL,
         60
     ));
     $settings->add(new admin_setting_configtext(
-        'local_paradiso/workspaceurl',
-        get_string('workspaceurl', 'local_paradiso'),
-        get_string('workspaceurl_desc', 'local_paradiso'),
+        'local_plmslti/workspaceurl',
+        get_string('workspaceurl', 'local_plmslti'),
+        get_string('workspaceurl_desc', 'local_plmslti'),
         '',
         PARAM_URL,
         60
     ));
     $settings->add(new admin_setting_configcheckbox(
-        'local_paradiso/removeonuninstall',
-        get_string('removeonuninstall', 'local_paradiso'),
-        get_string('removeonuninstall_desc', 'local_paradiso'),
+        'local_plmslti/removeonuninstall',
+        get_string('removeonuninstall', 'local_plmslti'),
+        get_string('removeonuninstall_desc', 'local_plmslti'),
         0
     ));
-    $ADMIN->add('local_paradiso_category', $settings);
+    $ADMIN->add('local_plmslti_category', $settings);
 
-    $ADMIN->add('local_paradiso_category', new admin_externalpage(
-        'local_paradiso_connect',
-        get_string('connect', 'local_paradiso'),
-        new moodle_url('/local/paradiso/index.php'),
-        'local/paradiso:manage'
+    $ADMIN->add('local_plmslti_category', new admin_externalpage(
+        'local_plmslti_connect',
+        get_string('connect', 'local_plmslti'),
+        new moodle_url('/local/plmslti/index.php'),
+        'local/plmslti:manage'
     ));
 }

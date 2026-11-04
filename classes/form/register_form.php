@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_paradiso\form;
+namespace local_plmslti\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -24,7 +24,7 @@ require_once($CFG->libdir . '/formslib.php');
 /**
  * Takes a Paradiso registration link and starts Dynamic Registration with it.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,11 +34,11 @@ class register_form extends \moodleform {
      */
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement('text', 'registrationurl', get_string('registrationurl', 'local_paradiso'), ['size' => 80]);
+        $mform->addElement('text', 'registrationurl', get_string('registrationurl', 'local_plmslti'), ['size' => 80]);
         $mform->setType('registrationurl', PARAM_URL);
-        $mform->addHelpButton('registrationurl', 'registrationurl', 'local_paradiso');
-        $mform->addRule('registrationurl', get_string('registrationurlrequired', 'local_paradiso'), 'required', null, 'client');
-        $this->add_action_buttons(false, get_string('register', 'local_paradiso'));
+        $mform->addHelpButton('registrationurl', 'registrationurl', 'local_plmslti');
+        $mform->addRule('registrationurl', get_string('registrationurlrequired', 'local_plmslti'), 'required', null, 'client');
+        $this->add_action_buttons(false, get_string('register', 'local_plmslti'));
     }
 
     /**
@@ -51,7 +51,7 @@ class register_form extends \moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         if (!preg_match('#^https://#i', $data['registrationurl'] ?? '')) {
-            $errors['registrationurl'] = get_string('registrationurlhttps', 'local_paradiso');
+            $errors['registrationurl'] = get_string('registrationurlhttps', 'local_plmslti');
         }
         return $errors;
     }

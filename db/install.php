@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Install steps for local_paradiso.
+ * Install steps for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,12 +34,12 @@
  *
  * @return bool
  */
-function xmldb_local_paradiso_install() {
-    set_config('signinurl', '', 'local_paradiso');
-    set_config('workspaceurl', '', 'local_paradiso');
-    set_config('removeonuninstall', 0, 'local_paradiso');
+function xmldb_local_plmslti_install() {
+    set_config('signinurl', '', 'local_plmslti');
+    set_config('workspaceurl', '', 'local_plmslti');
+    set_config('removeonuninstall', 0, 'local_plmslti');
     if (!CLI_SCRIPT) {
-        set_config('showconnect', time(), 'local_paradiso');
+        set_config('showconnect', time(), 'local_plmslti');
     }
     return true;
 }

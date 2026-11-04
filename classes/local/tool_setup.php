@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_paradiso\local;
+namespace local_plmslti\local;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
  * activity chooser. This class finishes the job so teachers can add the
  * tools without an admin editing each one by hand.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -74,7 +74,7 @@ class tool_setup {
      * @return string|null Null when the workspace address is not set.
      */
     public static function workspace_domain(): ?string {
-        $url = get_config('local_paradiso', 'workspaceurl');
+        $url = get_config('local_plmslti', 'workspaceurl');
         if (empty($url)) {
             return null;
         }
@@ -97,19 +97,78 @@ class tool_setup {
     }
 
     /**
+     * Whether the External tool activity is switched on for the site.
+     *
+     * When it is off, teachers cannot add any Paradiso activity, and Moodle
+     * refuses to create one even from a direct link.
+     *
+     * @return bool
+     */
+    public static function lti_enabled(): bool {
+        global $DB;
+        return (bool) $DB->get_field('modules', 'visible', ['name' => 'lti']);
+    }
+
+    /**
+     * Switch the External tool activity on, the way Site administration >
+     * Manage activities does.
+     *
+     * @return bool True when it was off and is now on.
+     */
+    public static function enable_lti(): bool {
+        global $CFG, $DB;
+        if (self::lti_enabled()) {
+            return false;
+        }
+        if (method_exists(\core\plugininfo\mod::class, 'enable_plugin')) {
+            \core\plugininfo\mod::enable_plugin('lti', 1);
+        } else {
+            // Moodle 3.9 to 3.11: the same steps as admin/modules.php?show=lti.
+            $moduleid = $DB->get_field('modules', 'id', ['name' => 'lti'], MUST_EXIST);
+            $DB->set_field('modules', 'visible', 1, ['id' => $moduleid]);
+            $DB->set_field('course_modules', 'visible', 1, ['visibleold' => 1, 'module' => $moduleid]);
+            increment_revision_number(
+                'course',
+                'cacherev',
+                'id IN (SELECT DISTINCT course FROM {course_modules} WHERE visible = 1 AND module = ?)',
+                [$moduleid]
+            );
+            \core_plugin_manager::reset_caches();
+        }
+        // Paradiso LMS keeps its own copy of the activity chooser and only
+        // refreshes it from Site administration. Refresh it now, or External
+        // tool stays hidden there until an admin happens to open that page.
+        $plmstheme = $CFG->dirroot . '/theme/paradiso/lib.php';
+        if (get_config('theme_paradiso', 'jsonmodules') && file_exists($plmstheme)) {
+            require_once($plmstheme);
+            if (function_exists('manage_mods')) {
+                manage_mods();
+            }
+        }
+        return true;
+    }
+
+    /**
      * Activate every Paradiso tool and put it in the activity chooser.
+     *
+     * Also switches on the External tool activity when the site has it off,
+     * since the tools cannot be used without it.
      *
      * Idempotent: running it again rewrites the same values.
      *
      * @return int Number of tools updated.
      */
     public static function activate_all(): int {
+        $tools = self::find_tools();
+        if ($tools) {
+            self::enable_lti();
+        }
         $count = 0;
-        foreach (self::find_tools() as $type) {
+        foreach ($tools as $type) {
             $type->state = LTI_TOOL_STATE_CONFIGURED;
             $config = new \stdClass();
             $config->lti_coursevisible = LTI_COURSEVISIBLE_ACTIVITYCHOOSER;
-            $config->lti_description = get_string('tooldescription_' . self::kind_of($type), 'local_paradiso');
+            $config->lti_description = get_string('tooldescription_' . self::kind_of($type), 'local_plmslti');
             $config->lti_sendname = LTI_SETTING_ALWAYS;
             $config->lti_sendemailaddr = LTI_SETTING_ALWAYS;
             // Inside a Moodle page Paradiso's sign-in cookie is a third-party
@@ -135,7 +194,7 @@ class tool_setup {
      * @return string|null Null when the workspace address is not set.
      */
     public static function icon_url(string $kind): ?string {
-        $base = rtrim((string) get_config('local_paradiso', 'workspaceurl'), '/');
+        $base = rtrim((string) get_config('local_plmslti', 'workspaceurl'), '/');
         if ($base === '') {
             return null;
         }

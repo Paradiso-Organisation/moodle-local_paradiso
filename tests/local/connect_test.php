@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_paradiso\local;
+namespace local_plmslti\local;
 
 /**
  * Tests for the Connect with Paradiso round trip.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @category   test
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \local_paradiso\local\connect
+ * @covers     \local_plmslti\local\connect
  */
 final class connect_test extends \advanced_testcase {
     public function test_start_url_uses_default_or_configured_signin_address(): void {
@@ -33,7 +33,7 @@ final class connect_test extends \advanced_testcase {
         $this->assertSame(connect::return_url()->out(false), $url->get_param('return'));
         $this->assertNotEmpty($url->get_param('state'));
 
-        set_config('signinurl', 'https://acme.example.com/', 'local_paradiso');
+        set_config('signinurl', 'https://acme.example.com/', 'local_plmslti');
         $this->assertStringStartsWith('https://acme.example.com/connect/moodle?', connect::start_url()->out(false));
     }
 
@@ -52,7 +52,7 @@ final class connect_test extends \advanced_testcase {
     public function test_old_state_is_rejected(): void {
         global $SESSION;
         $state = connect::new_state();
-        $SESSION->local_paradiso_state['time'] -= connect::STATE_TTL + 1;
+        $SESSION->local_plmslti_state['time'] -= connect::STATE_TTL + 1;
         $this->assertFalse(connect::check_state($state));
     }
 
@@ -70,8 +70,8 @@ final class connect_test extends \advanced_testcase {
             'other' => 'https://api.example/x',
         ]);
         $this->assertSame([
-            'https://api.example/public/pat-lti/register?token=a',
-            'https://api.example/public/lti/register?token=b',
+            'pat' => 'https://api.example/public/pat-lti/register?token=a',
+            'par' => 'https://api.example/public/lti/register?token=b',
         ], $links);
 
         $this->assertSame([], connect::valid_links(['pat' => 'http://api.example/x', 'par' => 'javascript:alert(1)']));
@@ -86,7 +86,7 @@ final class connect_test extends \advanced_testcase {
     }
 
     public function test_registration_link_carries_the_plugin_release(): void {
-        $release = \core_plugin_manager::instance()->get_plugin_info('local_paradiso')->release;
+        $release = \core_plugin_manager::instance()->get_plugin_info('local_plmslti')->release;
         $url = new \moodle_url(connect::with_plugin_version('https://app.paradiso.example/public/lti/register?token=abc'));
         $this->assertSame('abc', $url->get_param('token'));
         $this->assertSame($release, $url->get_param('plugin_version'));

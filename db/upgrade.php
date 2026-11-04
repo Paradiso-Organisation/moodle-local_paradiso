@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Upgrade steps for local_paradiso.
+ * Upgrade steps for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,13 +28,13 @@
  * @param int $oldversion The version we are upgrading from.
  * @return bool
  */
-function xmldb_local_paradiso_upgrade($oldversion) {
+function xmldb_local_plmslti_upgrade($oldversion) {
     if ($oldversion < 2026102801) {
         // The first skeleton stored an API URL and token. Tool setup goes
         // through LTI Dynamic Registration instead, so neither is used.
-        unset_config('apiurl', 'local_paradiso');
-        unset_config('apitoken', 'local_paradiso');
-        upgrade_plugin_savepoint(true, 2026102801, 'local', 'paradiso');
+        unset_config('apiurl', 'local_plmslti');
+        unset_config('apitoken', 'local_plmslti');
+        upgrade_plugin_savepoint(true, 2026102801, 'local', 'plmslti');
     }
     return true;
 }

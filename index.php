@@ -23,16 +23,18 @@
  * registration link into the form. Either way each link is registered in an
  * iframe, one at a time, and setup finishes when the last one is done.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_paradiso\local\connect;
-use local_paradiso\local\tool_setup;
+use local_plmslti\local\connect;
+use local_plmslti\local\registration;
+use local_plmslti\local\tool_setup;
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
+require_once(__DIR__ . '/lib.php');
 
 $action = optional_param('action', '', PARAM_ALPHA);
 
@@ -51,7 +53,7 @@ if ($action === 'connected' && empty($_POST['repost']) && !isloggedin()) {
     die();
 }
 
-admin_externalpage_setup('local_paradiso_connect');
+admin_externalpage_setup('local_plmslti_connect');
 
 $pageurl = connect::return_url();
 $nexturl = new moodle_url($pageurl, ['action' => 'next', 'sesskey' => sesskey()]);
@@ -68,7 +70,7 @@ if ($action === 'connected') {
     if (!connect::check_state(optional_param('state', '', PARAM_ALPHANUM))) {
         redirect(
             $pageurl,
-            get_string('connectexpired', 'local_paradiso'),
+            get_string('connectexpired', 'local_plmslti'),
             null,
             \core\output\notification::NOTIFY_ERROR
         );
@@ -81,12 +83,21 @@ if ($action === 'connected') {
     if (!connect::is_valid_tool_base($toolbaseurl) || !$links) {
         redirect(
             $pageurl,
-            get_string('connectfailed', 'local_paradiso'),
+            get_string('connectfailed', 'local_plmslti'),
             null,
             \core\output\notification::NOTIFY_ERROR
         );
     }
-    set_config('workspaceurl', $toolbaseurl, 'local_paradiso');
+    set_config('workspaceurl', $toolbaseurl, 'local_plmslti');
+    $links = connect::without_connected($links);
+    if (!$links) {
+        redirect(
+            $pageurl,
+            get_string('alreadyconnected', 'local_plmslti'),
+            null,
+            \core\output\notification::NOTIFY_INFO
+        );
+    }
     connect::queue_links($links);
     redirect($nexturl);
 }
@@ -103,29 +114,27 @@ if ($action === 'next') {
     $count = tool_setup::activate_all();
     redirect(
         $pageurl,
-        get_string('toolsactivated', 'local_paradiso', $count),
+        get_string('toolsactivated', 'local_plmslti', $count),
         null,
         \core\output\notification::NOTIFY_SUCCESS
     );
 } else {
-    $form = new \local_paradiso\form\register_form($pageurl);
+    $form = new \local_plmslti\form\register_form($pageurl);
     $registrationurl = ($data = $form->get_data()) ? $data->registrationurl : null;
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('connect', 'local_paradiso'));
+echo $OUTPUT->heading(get_string('connect', 'local_plmslti'));
 
 if ($registrationurl !== null) {
-    // The mod_lti start page signs a registration token and forwards to
-    // Paradiso. Paradiso posts org.imsglobal.lti.close to this window when it
-    // is done, which moves on to the next queued link or finishes setup.
-    $starturl = new moodle_url(
-        '/mod/lti/startltiadvregistration.php',
-        ['url' => connect::with_plugin_version($registrationurl), 'sesskey' => sesskey()]
-    );
-    echo $OUTPUT->notification(get_string('registering', 'local_paradiso'), 'info');
+    // The start page (mod_lti's, or this plugin's before Moodle 3.10) issues a
+    // registration token and forwards to Paradiso. Paradiso posts
+    // org.imsglobal.lti.close to this window when it is done, which moves on
+    // to the next queued link or finishes setup.
+    $starturl = registration::start_url(connect::with_plugin_version($registrationurl));
+    echo $OUTPUT->notification(get_string('registering', 'local_plmslti'), 'info');
     echo html_writer::tag('iframe', '', ['src' => $starturl->out(false), 'width' => '100%', 'height' => '320',
-        'class' => 'border', 'title' => get_string('registrationframe', 'local_paradiso')]);
+        'class' => 'border', 'title' => get_string('registrationframe', 'local_plmslti')]);
     $PAGE->requires->js_amd_inline("
         window.addEventListener('message', function(e) {
             if (e.data && e.data.subject === 'org.imsglobal.lti.close') {
@@ -137,40 +146,57 @@ if ($registrationurl !== null) {
 }
 
 if (optional_param('welcome', 0, PARAM_BOOL)) {
-    echo $OUTPUT->notification(get_string('welcome', 'local_paradiso'), 'success');
+    echo $OUTPUT->notification(get_string('welcome', 'local_plmslti'), 'success');
 }
 
 $tools = [];
+$needssetup = false;
 foreach (tool_setup::find_tools() as $type) {
     $active = $type->state == LTI_TOOL_STATE_CONFIGURED;
     $inchooser = $type->coursevisible == LTI_COURSEVISIBLE_ACTIVITYCHOOSER;
+    // A tool from 0.1.0 is active but has no icon; Finish setup adds it.
+    $needssetup = $needssetup || !tool_setup::is_active($type) || empty($type->icon);
     $tools[] = [
         'name' => format_string($type->name),
-        'status' => get_string($active ? 'statusactive' : 'statuspending', 'local_paradiso'),
-        'inchooser' => get_string($inchooser ? 'yes' : 'no', 'local_paradiso'),
+        'status' => get_string($active ? 'statusactive' : 'statuspending', 'local_plmslti'),
+        'inchooser' => get_string($inchooser ? 'yes' : 'no', 'local_plmslti'),
     ];
 }
-echo $OUTPUT->render_from_template('local_paradiso/status', ['hastools' => !empty($tools), 'tools' => $tools]);
 
-echo html_writer::tag('p', get_string('connectwithintro', 'local_paradiso'));
-echo $OUTPUT->single_button(
-    new moodle_url($pageurl, ['action' => 'start', 'sesskey' => sesskey()]),
-    get_string('connectwith', 'local_paradiso'),
-    'post',
-    ['type' => single_button::BUTTON_PRIMARY]
-);
-
-if (!empty($tools)) {
-    echo $OUTPUT->single_button($activateurl, get_string('activate', 'local_paradiso'));
-    echo html_writer::tag('p', get_string('activate_help', 'local_paradiso'), ['class' => 'text-muted']);
+if ($tools && !tool_setup::lti_enabled()) {
+    $needssetup = true;
+    echo $OUTPUT->notification(get_string('ltidisabled', 'local_plmslti'), 'warning', false);
 }
 
+if ($tools) {
+    echo $OUTPUT->notification(
+        get_string('connectedto', 'local_plmslti', s(get_config('local_plmslti', 'workspaceurl'))),
+        'success',
+        false
+    );
+}
+echo $OUTPUT->render_from_template('local_plmslti/status', ['hastools' => !empty($tools), 'tools' => $tools]);
+
+if ($needssetup) {
+    echo local_plmslti_button($activateurl, get_string('activate', 'local_plmslti'), true);
+    echo html_writer::tag('p', get_string('activate_help', 'local_plmslti'), ['class' => 'text-muted']);
+}
+
+// Once connected, Connect again is still needed after the workspace gains a
+// product or to switch workspace, so it stays, as a secondary button.
+echo html_writer::tag('p', get_string($tools ? 'reconnectintro' : 'connectwithintro', 'local_plmslti'));
+echo local_plmslti_button(
+    new moodle_url($pageurl, ['action' => 'start', 'sesskey' => sesskey()]),
+    get_string($tools ? 'reconnect' : 'connectwith', 'local_plmslti'),
+    !$tools
+);
+
 echo html_writer::start_tag('details', ['class' => 'mt-4']);
-echo html_writer::tag('summary', get_string('manualconnect', 'local_paradiso'));
+echo html_writer::tag('summary', get_string('manualconnect', 'local_plmslti'));
 if (tool_setup::workspace_domain() === null) {
-    echo $OUTPUT->notification(get_string('workspacemissing', 'local_paradiso'), 'warning');
+    echo $OUTPUT->notification(get_string('workspacemissing', 'local_plmslti'), 'warning');
 } else {
-    echo html_writer::tag('p', get_string('connectintro', 'local_paradiso'));
+    echo html_writer::tag('p', get_string('connectintro', 'local_plmslti'));
     $form->display();
 }
 echo html_writer::end_tag('details');

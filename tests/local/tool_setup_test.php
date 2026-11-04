@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_paradiso\local;
+namespace local_plmslti\local;
 
 use core\check\result;
-use local_paradiso\check\connection;
+use local_plmslti\check\connection;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -27,12 +27,13 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
 /**
  * Tests for tool_setup and the connection status check.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @category   test
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \local_paradiso\local\tool_setup
- * @covers     \local_paradiso\check\connection
+ * @covers     \local_plmslti\local\tool_setup
+ * @covers     \local_plmslti\check\connection
+ * @covers     \local_plmslti\local\connect
  */
 final class tool_setup_test extends \advanced_testcase {
     /** @var string Workspace the tests register from. */
@@ -72,7 +73,7 @@ final class tool_setup_test extends \advanced_testcase {
 
     public function test_find_tools_only_returns_paradiso_tools_from_the_workspace(): void {
         $this->resetAfterTest();
-        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
         $pat = $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
         $roleplay = $this->add_tool(self::WORKSPACE . '/lti/callback');
         $this->add_tool(self::WORKSPACE . '/something/else');
@@ -85,7 +86,7 @@ final class tool_setup_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
         $pat = $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
         $roleplay = $this->add_tool(self::WORKSPACE . '/lti/callback');
 
@@ -102,16 +103,33 @@ final class tool_setup_test extends \advanced_testcase {
             $this->assertEquals(LTI_SETTING_ALWAYS, $config['sendemailaddr']);
         }
         $this->assertSame(
-            get_string('tooldescription_pat', 'local_paradiso'),
+            get_string('tooldescription_pat', 'local_plmslti'),
             $DB->get_field('lti_types', 'description', ['id' => $pat])
         );
+    }
+
+    public function test_connect_again_skips_connected_products(): void {
+        $this->resetAfterTest();
+        $links = ['pat' => 'https://api.example/pat', 'par' => 'https://api.example/par'];
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
+        $this->assertSame($links, connect::without_connected($links));
+
+        $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
+        $this->assertSame(['par' => 'https://api.example/par'], connect::without_connected($links));
+
+        $this->add_tool(self::WORKSPACE . '/lti/callback');
+        $this->assertSame([], connect::without_connected($links));
+
+        // A different workspace starts from scratch.
+        set_config('workspaceurl', 'https://other.paradiso.example', 'local_plmslti');
+        $this->assertSame($links, connect::without_connected($links));
     }
 
     public function test_remove_all(): void {
         global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
         $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
         $other = $this->add_tool('https://other.example/lti/pat/callback');
 
@@ -156,7 +174,7 @@ final class tool_setup_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
         $pat = $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
         $roleplay = $this->add_tool(self::WORKSPACE . '/lti/callback');
         $DB->set_field('lti_types', 'icon', 'https://cdn.example/own.png', ['id' => $roleplay]);
@@ -173,7 +191,7 @@ final class tool_setup_test extends \advanced_testcase {
         $check = $this->check(true);
         $this->assertSame(result::NA, $check->get_result()->get_status());
 
-        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
         $this->assertSame(result::WARNING, $check->get_result()->get_status());
 
         $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
@@ -183,10 +201,41 @@ final class tool_setup_test extends \advanced_testcase {
         $this->assertSame(result::OK, $check->get_result()->get_status());
     }
 
+    public function test_activate_all_switches_on_external_tool(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $DB->set_field('modules', 'visible', 0, ['name' => 'lti']);
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
+
+        // No Paradiso tools yet: leave the site's choice alone.
+        tool_setup::activate_all();
+        $this->assertFalse(tool_setup::lti_enabled());
+
+        $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
+        tool_setup::activate_all();
+        $this->assertTrue(tool_setup::lti_enabled());
+        $this->assertFalse(tool_setup::enable_lti());
+    }
+
+    public function test_connection_check_warns_when_external_tool_is_off(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
+        $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
+        tool_setup::activate_all();
+        $DB->set_field('modules', 'visible', 0, ['name' => 'lti']);
+
+        $result = $this->check(true)->get_result();
+        $this->assertSame(result::WARNING, $result->get_status());
+        $this->assertSame(get_string('checkconnection_ltidisabled', 'local_plmslti'), $result->get_summary());
+    }
+
     public function test_connection_check_reports_unreachable_paradiso(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
-        set_config('workspaceurl', self::WORKSPACE, 'local_paradiso');
+        set_config('workspaceurl', self::WORKSPACE, 'local_plmslti');
         $this->add_tool(self::WORKSPACE . '/lti/pat/callback');
         tool_setup::activate_all();
 

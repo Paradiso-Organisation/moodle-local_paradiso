@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace local_paradiso\check;
+namespace local_plmslti\check;
 
 use core\check\check;
 use core\check\result;
-use local_paradiso\local\tool_setup;
+use local_plmslti\local\tool_setup;
 
 /**
  * Status check: is Paradiso connected and are its tools switched on?
  *
  * Shown on Site administration > Reports > System status.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -36,7 +36,7 @@ class connection extends check {
      * @return string
      */
     public function get_name(): string {
-        return get_string('checkconnection', 'local_paradiso');
+        return get_string('checkconnection', 'local_plmslti');
     }
 
     /**
@@ -46,8 +46,8 @@ class connection extends check {
      */
     public function get_action_link(): ?\action_link {
         return new \action_link(
-            new \moodle_url('/local/paradiso/index.php'),
-            get_string('connect', 'local_paradiso')
+            new \moodle_url('/local/plmslti/index.php'),
+            get_string('connect', 'local_plmslti')
         );
     }
 
@@ -76,20 +76,23 @@ class connection extends check {
      */
     public function get_result(): result {
         if (tool_setup::workspace_domain() === null) {
-            return new result(result::NA, get_string('checkconnection_nourl', 'local_paradiso'));
+            return new result(result::NA, get_string('checkconnection_nourl', 'local_plmslti'));
         }
-        $workspaceurl = (string) get_config('local_paradiso', 'workspaceurl');
+        $workspaceurl = (string) get_config('local_plmslti', 'workspaceurl');
         if (!$this->is_reachable($workspaceurl)) {
-            return new result(result::ERROR, get_string('checkconnection_unreachable', 'local_paradiso', $workspaceurl));
+            return new result(result::ERROR, get_string('checkconnection_unreachable', 'local_plmslti', $workspaceurl));
         }
         $tools = tool_setup::find_tools();
         if (!$tools) {
-            return new result(result::WARNING, get_string('notools', 'local_paradiso'));
+            return new result(result::WARNING, get_string('notools', 'local_plmslti'));
+        }
+        if (!tool_setup::lti_enabled()) {
+            return new result(result::WARNING, get_string('checkconnection_ltidisabled', 'local_plmslti'));
         }
         $pending = array_filter($tools, fn($type) => !tool_setup::is_active($type));
         if ($pending) {
-            return new result(result::WARNING, get_string('checkconnection_pending', 'local_paradiso', count($pending)));
+            return new result(result::WARNING, get_string('checkconnection_pending', 'local_plmslti', count($pending)));
         }
-        return new result(result::OK, get_string('checkconnection_ok', 'local_paradiso', count($tools)));
+        return new result(result::OK, get_string('checkconnection_ok', 'local_plmslti', count($tools)));
     }
 }

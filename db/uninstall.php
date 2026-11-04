@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Uninstall steps for local_paradiso.
+ * Uninstall steps for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,9 +31,9 @@
  *
  * @return bool
  */
-function xmldb_local_paradiso_uninstall() {
-    if (get_config('local_paradiso', 'removeonuninstall')) {
-        \local_paradiso\local\tool_setup::remove_all();
+function xmldb_local_plmslti_uninstall() {
+    if (get_config('local_plmslti', 'removeonuninstall')) {
+        \local_plmslti\local\tool_setup::remove_all();
     }
     return true;
 }

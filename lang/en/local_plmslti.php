@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * English strings for local_paradiso.
+ * English strings for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,8 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['activate'] = 'Finish setup';
-$string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace, adds it to the activity chooser with its icon and sets it to open in a new window. Safe to run more than once.';
+$string['activate_help'] = 'Turns on every Paradiso tool registered from your workspace, and the External tool activity if it is off. Adds each tool to the activity chooser with its icon and sets it to open in a new window. Safe to run more than once.';
+$string['alreadyconnected'] = 'Everything your Paradiso workspace offers is already connected. Nothing new to add.';
 $string['checkconnection'] = 'Paradiso connection';
+$string['checkconnection_ltidisabled'] = 'The External tool activity is switched off, so teachers cannot add Paradiso activities. Open Connect Paradiso and click Finish setup.';
 $string['checkconnection_nourl'] = 'Paradiso is not connected yet. Open Connect Paradiso and click Connect with Paradiso.';
 $string['checkconnection_ok'] = '{$a} Paradiso tool(s) are active and in the activity chooser.';
 $string['checkconnection_pending'] = '{$a} Paradiso tool(s) are registered but not switched on. Open Connect Paradiso and click Finish setup.';
@@ -35,17 +37,21 @@ $string['colchooser'] = 'In activity chooser';
 $string['colname'] = 'Tool';
 $string['colstatus'] = 'Status';
 $string['connect'] = 'Connect Paradiso';
+$string['connectedto'] = 'Connected to your Paradiso workspace at {$a}.';
 $string['connectexpired'] = 'That connection request has expired or was already used. Click Connect with Paradiso to try again.';
 $string['connectfailed'] = 'Paradiso did not send anything to set up. Click Connect with Paradiso to try again.';
 $string['connectintro'] = 'In Paradiso, open Integrations, choose Moodle, and copy the link for Presentations or Roleplay. Paste it below and register one product at a time.';
 $string['connectwith'] = 'Connect with Paradiso';
 $string['connectwithintro'] = 'Opens Paradiso, where you can create a free account or log in with an existing one. Approve the connection there, and Moodle registers Presentations and Roleplay and switches them on.';
+$string['ltidisabled'] = 'The External tool activity is switched off on this site, so teachers cannot add Paradiso activities. Click Finish setup to switch it on.';
 $string['manualconnect'] = 'Connect with a registration link instead';
 $string['no'] = 'No';
 $string['notools'] = 'No Paradiso tools are registered from this workspace yet.';
-$string['paradiso:manage'] = 'Manage the Paradiso integration';
+$string['plmslti:manage'] = 'Manage the Paradiso integration';
 $string['pluginname'] = 'Paradiso integration';
 $string['privacy:metadata'] = 'The Paradiso integration plugin does not store any personal data. Course launches use the External tool activity, which has its own privacy settings.';
+$string['reconnect'] = 'Connect again';
+$string['reconnectintro'] = 'Use Connect again after your workspace gets another product, such as Roleplay, or to connect a different workspace. Tools that already work keep working.';
 $string['register'] = 'Register';
 $string['registering'] = 'Registering with Paradiso. This page moves on by itself when it is done.';
 $string['registrationframe'] = 'Paradiso registration';

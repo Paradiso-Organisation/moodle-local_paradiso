@@ -1,4 +1,4 @@
-@local @local_paradiso
+@local @local_plmslti
 Feature: Connect Paradiso
   In order to add Paradiso activities to courses
   As an admin
@@ -19,12 +19,12 @@ Feature: Connect Paradiso
 
   Scenario: The registration link must use https
     Given the following config values are set as admin:
-      | workspaceurl | https://acme.paradiso.example | local_paradiso |
+      | workspaceurl | https://acme.paradiso.example | local_plmslti |
     And I navigate to "Plugins > Local plugins > Paradiso integration > Connect Paradiso" in site administration
     When I set the field "Registration link" to "http://acme.paradiso.example/public/lti/register?token=x"
     And I press "Register"
     Then I should see "The Registration link must be a valid URL that starts with https."
 
   Scenario: A reply from Paradiso without a matching request is refused
-    When I visit "/local/paradiso/index.php?action=connected&state=forged"
+    When I visit "/local/plmslti/index.php?action=connected&state=forged"
     Then I should see "That connection request has expired or was already used."

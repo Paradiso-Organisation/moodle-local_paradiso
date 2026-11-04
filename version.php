@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Version details for local_paradiso.
+ * Version details for local_plmslti.
  *
- * @package    local_paradiso
+ * @package    local_plmslti
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_paradiso';
-$plugin->version   = 2026110200;
-$plugin->requires  = 2024100700; // Moodle 4.5.
-$plugin->supported = [405, 503];
-$plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '0.2.0';
+$plugin->component = 'local_plmslti';
+$plugin->version   = 2026110403;
+$plugin->requires  = 2020061500; // Moodle 3.9.
+$plugin->supported = [39, 503];
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = '1.0.0';

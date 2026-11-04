@@ -22,7 +22,7 @@
  * The description field is never reset when it is missing from the data, so
  * we hand mod_lti the data without it and set the description ourselves.
  *
- * @module     local_paradiso/contentitem_fix
+ * @module     local_plmslti/contentitem_fix
  * @copyright  2026 Paradiso Solutions
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
