@@ -30,5 +30,7 @@ define('NO_MOODLE_COOKIES', true);
 
 require_once(__DIR__ . '/../../config.php');
 
+$token = optional_param('registration_token', '', PARAM_ALPHANUM);
+
 @header('Content-Type: application/json; charset=utf-8');
-echo json_encode(\local_plmslti\local\registration::platform_configuration(), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+echo json_encode(\local_plmslti\local\registration::platform_configuration($token), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);

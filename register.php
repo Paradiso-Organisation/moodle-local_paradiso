@@ -35,8 +35,9 @@ require_capability('moodle/site:config', context_system::instance());
 require_sesskey();
 
 $link = required_param('url', PARAM_URL);
+$token = registration::new_token();
 $url = new moodle_url($link, [
-    'openid_configuration' => (new moodle_url('/local/plmslti/openid-configuration.php'))->out(false),
-    'registration_token' => registration::new_token(),
+    'openid_configuration' => (new moodle_url('/local/plmslti/openid-configuration.php', ['registration_token' => $token]))->out(false),
+    'registration_token' => $token,
 ]);
 redirect($url);

@@ -51,8 +51,14 @@ function local_plmslti_registration_reply(int $code, $body): void {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     local_plmslti_registration_reply(405, ['error' => 'unsupported_method']);
 }
-$authheader = \moodle\mod\lti\OAuthUtil::get_headers()['Authorization'] ?? '';
-if (strpos($authheader, 'Bearer ') !== 0 || !registration::use_token(trim(substr($authheader, 7)))) {
+$authheader = \moodle\mod\lti\OAuthUtil::get_headers()['Authorization']
+    ?? $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+// Without the header (stripped by the web server), use the copy on this address.
+// See registration::platform_configuration().
+$token = strpos($authheader, 'Bearer ') === 0
+    ? trim(substr($authheader, 7))
+    : optional_param('registration_token', '', PARAM_ALPHANUM);
+if (!registration::use_token($token)) {
     local_plmslti_registration_reply(401, ['error' => 'invalid_registration_token']);
 }
 $request = json_decode(file_get_contents('php://input'), true);

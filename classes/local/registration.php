@@ -115,10 +115,20 @@ class registration {
     /**
      * This site's LTI platform configuration, as mod_lti publishes it on 3.10 and later.
      *
+     * Many Apache and PHP-FPM setups drop the Authorization header before PHP sees it,
+     * which leaves the registration endpoint without its Bearer token. So the token also
+     * rides on the registration endpoint's address, where openid-registration.php falls
+     * back to it. It works once and expires within the hour, like the Bearer token.
+     *
+     * @param string $token Registration token to put on the registration endpoint, if any.
      * @return array
      */
-    public static function platform_configuration(): array {
+    public static function platform_configuration(string $token = ''): array {
         global $CFG;
+        $registrationendpoint = new \moodle_url('/local/plmslti/openid-registration.php');
+        if ($token !== '') {
+            $registrationendpoint->param('registration_token', $token);
+        }
         return [
             'issuer' => $CFG->wwwroot,
             'token_endpoint' => (new \moodle_url('/mod/lti/token.php'))->out(false),
@@ -126,7 +136,7 @@ class registration {
             'token_endpoint_auth_signing_alg_values_supported' => ['RS256'],
             'jwks_uri' => (new \moodle_url('/mod/lti/certs.php'))->out(false),
             'authorization_endpoint' => (new \moodle_url('/mod/lti/auth.php'))->out(false),
-            'registration_endpoint' => (new \moodle_url('/local/plmslti/openid-registration.php'))->out(false),
+            'registration_endpoint' => $registrationendpoint->out(false),
             'scopes_supported' => ['openid', self::SCOPE_SCORE, self::SCOPE_LINEITEM, self::SCOPE_NRPS],
             'response_types_supported' => ['id_token'],
             'subject_types_supported' => ['public', 'pairwise'],

@@ -1,5 +1,15 @@
 # Changes
 
+## 1.0.1 (2026-11-04)
+
+- Fixes "Registration failed ... invalid_registration_token" on servers whose
+  web server drops the Authorization header before PHP sees it (common with
+  Apache and PHP-FPM). This hit sites that register through the plugin's own
+  pages, such as Moodle 3.9 and Paradiso LMS. The one-time registration token
+  now also travels on the registration address, so it gets through either way.
+- README: technical requirements, the server permissions a zip install needs,
+  and how to finish a manual install from the command line.
+
 ## 1.0.0 (2026-11-04)
 
 - First stable release, for the Moodle plugins directory.
