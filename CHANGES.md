@@ -1,5 +1,12 @@
 # Changes
 
+## 1.0.2 (2026-11-05)
+
+- Connect with Paradiso now goes to https://velocity-dev.paradisolms.net when
+  Paradiso sign-in address is left blank. The old default went to an address
+  that does not have the Connect page, so Connect failed with a "not found"
+  page unless the admin filled in the setting.
+
 ## 1.0.1 (2026-11-04)
 
 - Fixes "Registration failed ... invalid_registration_token" on servers whose

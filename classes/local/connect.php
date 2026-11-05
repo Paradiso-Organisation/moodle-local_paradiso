@@ -30,7 +30,7 @@ namespace local_plmslti\local;
  */
 class connect {
     /** @var string Paradiso's shared sign-in address, used when the admin sets none. */
-    public const DEFAULT_SIGNIN_URL = 'https://app.paradiso.ai';
+    public const DEFAULT_SIGNIN_URL = 'https://velocity-dev.paradisolms.net';
 
     /** @var int Seconds a state value stays valid. */
     public const STATE_TTL = 3600;

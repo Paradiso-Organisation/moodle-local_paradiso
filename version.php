@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_plmslti';
-$plugin->version   = 2026110404;
+$plugin->version   = 2026110500;
 $plugin->requires  = 2020061500; // Moodle 3.9.
 $plugin->supported = [39, 503];
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.1';
+$plugin->release   = '1.0.2';
