@@ -1,5 +1,11 @@
 # Changes
 
+## 1.0.3 (2026-11-05)
+
+- Connect with Paradiso now goes to Paradiso production,
+  https://app.paradisosolutions.com, when Paradiso sign-in address is left
+  blank. 1.0.2 sent it to a development site.
+
 ## 1.0.2 (2026-11-05)
 
 - Connect with Paradiso now goes to https://velocity-dev.paradisolms.net when
